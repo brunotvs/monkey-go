@@ -13,7 +13,7 @@ import (
 
 type vmTestCase struct {
 	input    string
-	expected interface{}
+	expected any
 }
 
 func TestIntegerArithmetic(t *testing.T) {
@@ -369,6 +369,24 @@ func TestCallingFunctionsWithArgumentsAndBindings(t *testing.T) {
 	runVmTests(t, tests)
 }
 
+func TestCallingFunctionsWithArgumentsAndMultipleBindings(t *testing.T) {
+	tests := []vmTestCase{
+		{
+			input: `
+			let sum = fn(a, b) { 
+				let c = a + b;
+				let d = c + 10;
+				d;
+			};
+			sum(1, 2);
+			`,
+			expected: 13,
+		},
+	}
+
+	runVmTests(t, tests)
+}
+
 func TestCallingFunctionsWithWrongArguments(t *testing.T) {
 	tests := []vmTestCase{
 		{
@@ -583,7 +601,7 @@ func runVmTests(t *testing.T, tests []vmTestCase) {
 	}
 }
 
-func testExpectedObject(t *testing.T, expected interface{}, actual object.Object) {
+func testExpectedObject(t *testing.T, expected any, actual object.Object) {
 	t.Helper()
 
 	switch expected := expected.(type) {
